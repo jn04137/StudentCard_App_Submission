@@ -95,6 +95,37 @@ class StudentModel {
 		xhttp.send();
 	}
 
+	/*
+	This is custom method to create a student card on frontend and backend.
+	Will call /api/student/create endpoint and send student data as json
+	for the backend to use.	
+	*/
+	createStudent() {
+		console.log('In createStudent()');
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			// This code is for the deletion of student cards
+			// if (this.readyState == 4 && this.status == 200) {
+			// 	console.log(this.responseText);
+
+			// 	const element = document.querySelector('#root');
+			// 	let event = new CustomEvent('StudentDeleted', { detail: 'success' });
+			// 	element.dispatchEvent(event);
+			// 	location.reload() // This is used to essentially reload the page
+			// }
+
+			// Should probably use the getStudentData() method here after deletiong
+			// to repopulate the card deck and refresh the page at the same time.
+
+		};
+
+		let url = `http://localhost:3050/api/student/create`;
+
+		xhttp.open("POST", url, true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+
 }
 
 class StudentView {
@@ -256,7 +287,7 @@ class StudentController {
 		this.view.createStudentModal(id);
 	}
 
-	// This will open up a modal view
+	// This will open up a modal view for add new student
 	handleAddStudentClick() {
 		console.log('Add student modal clicked');
 		this.view.createAddStudentModal();
@@ -274,6 +305,9 @@ class StudentController {
 
 	handleCancelClick() {
 		console.log("Cancel button was clicked");
+		document.getElementById('createStudentNameInput').value = "";
+		document.getElementById('createStudentClassInput').value = "";
+		document.getElementById('createStudentMajorInput').value = "";
 	}
 
 

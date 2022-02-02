@@ -4,19 +4,21 @@ studentModel = new StudentModel();
 
 const path = require("path");
 
-
+// Sends the student list to the frontend
 // Display list of all students.
 exports.student_list = function (req, res) {
     students = studentModel.getAllStudents();
     res.send(students);
 };
 
+// Send the student details and information to the frontend
 // Display detail page for a specific student.
 exports.student_detail = function (req, res) {
     student = studentModel.getStudentById(req.params.id);
     res.send(student);
 };
 
+// Delete a specific student from the backend
 // Delete a specific student.
 exports.student_delete = function (req, res) {
     studentModel.deleteStudentById(req.params.id);
