@@ -1,3 +1,4 @@
+// Look at page 49 on the slides
 var express = require('express');
 var path = require('path');
 
@@ -18,8 +19,7 @@ app.use('/scripts', scriptsRouter);
 //Setup router for the api
 app.use('/api', apiRouter);
 
-const PORT  = process.env.PORT || 3050
-app.listen(PORT,()=> console.info(`Server has started on ${PORT}`))
-
+const PORT = process.env.PORT || 3050
+app.listen(PORT, () => console.info(`Server has started on ${PORT} `))
 
 module.exports = app;

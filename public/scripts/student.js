@@ -13,7 +13,7 @@ class viewHelper {
 	// Create an element with an optional CSS class
 	static createElement(tag, classNames) {
 		const element = document.createElement(tag)
-		
+
 		for (var className of classNames) {
 			element.classList.add(className)
 		}
@@ -24,7 +24,7 @@ class viewHelper {
 
 	static createDataRow(label, data) {
 		let row = viewHelper.createElement('div', ['form-group', 'row']);
-		let labelColumn = viewHelper.createElement('label', ['col-sm-2','col-form-label']);
+		let labelColumn = viewHelper.createElement('label', ['col-sm-2', 'col-form-label']);
 		labelColumn.textContent = label;
 		let fieldColumn = viewHelper.createElement('div', ['col-sm-10']);
 		let fieldText = viewHelper.createElement('label', ['form-control-plaintext']);
@@ -42,44 +42,48 @@ class StudentModel {
 	constructor() {
 		this.initialize();
 	}
-	
+
 	initialize() {
 		this.getStudentData();
-		
+
 	}
-	
+
 	getStudentData() {
 		console.log('In GetStudent()');
 		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
+
+		// The code below is what we can use to do something on an
+		// 'OK' status
+		xhttp.onreadystatechange = function () {
 			if (this.readyState == 4 && this.status == 200) {
 				console.log(this.responseText);
-				
-				
+
+
 				this.students = JSON.parse(this.responseText);
-				
+
 				const element = document.querySelector('#root');
-				let event = new CustomEvent('GetStudentData', {detail:this.students});
+				let event = new CustomEvent('GetStudentData', { detail: this.students });
 				element.dispatchEvent(event);
-			 
+
 			}
 		};
 		xhttp.open("GET", "http://localhost:3050/api/students", true);
 		xhttp.setRequestHeader("Content-type", "application/json");
-		xhttp.send();
+		xhttp.send(); // <== Message body should be put in here if you want to send anything
+		// xhttp.send(JSON.stringify({})); Takes the object and send a string
 	}
 
-	deleteStudent(id){
+	deleteStudent(id) {
 		console.log('In DeleteStudent()');
 		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
+		xhttp.onreadystatechange = function () {
 			if (this.readyState == 4 && this.status == 200) {
 				console.log(this.responseText);
-				
+
 				const element = document.querySelector('#root');
-				let event = new CustomEvent('StudentDeleted', {detail:'success'});
+				let event = new CustomEvent('StudentDeleted', { detail: 'success' });
 				element.dispatchEvent(event);
-			 
+				location.reload()
 			}
 
 		};
@@ -97,60 +101,78 @@ class StudentView {
 	constructor() {
 		//this.createView();
 	}
-	
 
 
 
 
+	// This should be where we add the add student (+)
 	createView(studentData) {
-		
-//		consol.log(studentData);
+		//		consol.log(studentData);
 		this.studentData = studentData;
-		
+
 		this.app = viewHelper.getElement('#root');
 		let title = this.createTitle();
 		let cards = this.createCards();
-		
+
 		let container = viewHelper.createElement('div', ['container']);
 		container.append(title, cards);
-		
+
 		this.app.append(container);
 	}
 
 	createTitle() {
-		let title = viewHelper.createElement('div', ['title','h3', 'mt-4','mb-4']);
+		let title = viewHelper.createElement('div', ['title', 'h3', 'mt-4', 'mb-4']);
 		title.textContent = 'Students';
 		return title;
 	}
 
-	
+
 	createCards() {
 		console.log('Ready to Create Cards');
-		
+
 		let cardDeck = viewHelper.createElement('div', ['card-deck']);
-		
-		for(var student of this.studentData){
-		
+
+		for (var student of this.studentData) {
+
 			let card = viewHelper.createElement('div', ['card']);
-			card.setAttribute('onClick', 'app.handleCardClick('+student.id+');');
-			
+			card.setAttribute('onClick', 'app.handleCardClick(' + student.id + ');');
+
 			let cardBody = viewHelper.createElement('div', ['card-body']);
 			let cardTitle = viewHelper.createElement('div', ['card-title']);
 			cardTitle.textContent = student.name;
 			let cardText = viewHelper.createElement('p', ['card-text']);
 			cardText.textContent = student.class;
-		
+
 			cardBody.append(cardTitle, cardText);
 			card.append(cardBody);
 			cardDeck.append(card);
-		
+
 		}
+		let plusCard = viewHelper.createElement('div', ['card']);
+		let cardBody = viewHelper.createElement('div', ['card-body']);
+		let cardText = viewHelper.createElement('p', ['card-text']);
+		cardText.textContent = "+";
+		cardBody.append(cardText);
+		plusCard.append(cardBody);
+
+		cardDeck.append(plusCard);
+		plusCard.setAttribute('onClick', 'app.handleAddStudentClick();');
+
 		return cardDeck;
 	}
 
-	createStudentModal(id){
+	createAddStudentModal() {
 
-		let student = this.studentData.find(x=>x.id === id);
+		let modalTitle = viewHelper.getElement('#createStudentModalLabel');
+		modalTitle.textContent = "Add student";
+
+		const modal = document.querySelector('#createStudentModal');
+		$('#createStudentModal').modal('toggle');
+	}
+
+	createStudentModal(id) {
+
+		let student = this.studentData.find(x => x.id === id);
 		let modalTitle = viewHelper.getElement('#studentModalLabel');
 		modalTitle.textContent = student.name;
 
@@ -160,9 +182,9 @@ class StudentView {
 
 		let modalBody = viewHelper.getElement('#studentModalBody');
 		modalBody.replaceChildren();
-		modalBody.append( classRow, majorRow, deleteRow);
+		modalBody.append(classRow, majorRow, deleteRow);
 
-		let btnFooterClose = viewHelper.createElement('button', ['btn','btn-primary']);
+		let btnFooterClose = viewHelper.createElement('button', ['btn', 'btn-primary']);
 		btnFooterClose.setAttribute('type', 'button');
 		btnFooterClose.setAttribute('data-dismiss', 'modal');
 		btnFooterClose.textContent = 'Close';
@@ -175,9 +197,10 @@ class StudentView {
 
 	}
 
+	// This displays the student's data
 	createDataRow(label, data) {
 		let row = viewHelper.createElement('div', ['form-group', 'row']);
-		let labelColumn = viewHelper.createElement('label', ['col-sm-2','col-form-label']);
+		let labelColumn = viewHelper.createElement('label', ['col-sm-2', 'col-form-label']);
 		labelColumn.textContent = label;
 		let fieldColumn = viewHelper.createElement('div', ['col-sm-10']);
 		let fieldText = viewHelper.createElement('label', ['form-control-plaintext']);
@@ -187,15 +210,16 @@ class StudentView {
 		return row;
 	}
 
+	// This creates the delete button on each model
 	createDeleteRow(id) {
 		let row = viewHelper.createElement('div', ['form-group', 'row']);
-		let labelColumn = viewHelper.createElement('label', ['col-sm-2','col-form-label']);
+		let labelColumn = viewHelper.createElement('label', ['col-sm-2', 'col-form-label']);
 		labelColumn.textContent = '';
 		let fieldColumn = viewHelper.createElement('div', ['col-sm-10']);
 
-		let button = viewHelper.createElement('button', ['btn','btn-secondary']);
+		let button = viewHelper.createElement('button', ['btn', 'btn-secondary']);
 		button.textContent = 'Delete';
-		button.setAttribute('onClick', 'app.handleDeleteCard('+id+');');
+		button.setAttribute('onClick', 'app.handleDeleteCard(' + id + ');');
 
 
 		fieldColumn.append(button);
@@ -203,7 +227,7 @@ class StudentView {
 		return row;
 	}
 
-	
+
 }
 
 class StudentController {
@@ -213,23 +237,29 @@ class StudentController {
 
 
 		const element = document.querySelector('#root');
-		element.addEventListener('GetStudentData', function(event) {
+		element.addEventListener('GetStudentData', function (event) {
 			app.handleStudentData(event.detail);
 		});
-		element.addEventListener('StudentDeleted', function(event) {
+		element.addEventListener('StudentDeleted', function (event) {
 			app.handleStudentDeleted(event.detail);
 		});
 	}
-	
-	handleStudentData(student){
+
+	handleStudentData(student) {
 		console.log('create view');
 		this.view.createView(student);
 	}
-	
+
 
 	handleCardClick(id) {
 		console.log('modal ' + id + ' clicked');
 		this.view.createStudentModal(id);
+	}
+
+	// This will open up a modal view
+	handleAddStudentClick() {
+		console.log('Add student modal clicked');
+		this.view.createAddStudentModal();
 	}
 
 	handleDeleteCard(id) {
@@ -240,6 +270,10 @@ class StudentController {
 	handleStudentDeleted() {
 		const modal = document.querySelector('#studentModal');
 		$('#studentModal').modal('toggle');
+	}
+
+	handleCancelClick() {
+		console.log("Cancel button was clicked");
 	}
 
 
