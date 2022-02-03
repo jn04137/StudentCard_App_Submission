@@ -105,25 +105,33 @@ class StudentModel {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
 			// This code is for the deletion of student cards
-			// if (this.readyState == 4 && this.status == 200) {
-			// 	console.log(this.responseText);
+			if (this.readyState == 4 && this.status == 200) {
+				console.log(this.responseText);
 
-			// 	const element = document.querySelector('#root');
-			// 	let event = new CustomEvent('StudentDeleted', { detail: 'success' });
-			// 	element.dispatchEvent(event);
-			// 	location.reload() // This is used to essentially reload the page
-			// }
-
+				const element = document.querySelector('#root');
+				let event = new CustomEvent('StudentCreated', { detail: 'success' });
+				element.dispatchEvent(event);
+			}
 			// Should probably use the getStudentData() method here after deletiong
 			// to repopulate the card deck and refresh the page at the same time.
 
 		};
-
+		// Route to the create endpoint to create user 
 		let url = `http://localhost:3050/api/student/create`;
+
+		let nameInput = document.getElementById('createStudentNameInput').value;
+		let classInput = document.getElementById('createStudentClassInput').value;
+		let majorInput = document.getElementById('createStudentMajorInput').value;
 
 		xhttp.open("POST", url, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
-		xhttp.send();
+		xhttp.send(
+			JSON.stringify({
+				name: nameInput,
+				class: classInput,
+				major: majorInput
+			})
+		);
 	}
 
 }
@@ -310,7 +318,15 @@ class StudentController {
 		document.getElementById('createStudentMajorInput').value = "";
 	}
 
-
+	handleSaveClick() {
+		let nameInput = document.getElementById('createStudentNameInput').value;
+		let classInput = document.getElementById('createStudentClassInput').value;
+		let majorInput = document.getElementById('createStudentMajorInput').value;
+		console.log(nameInput);
+		console.log(classInput);
+		console.log(majorInput);
+		this.model.createStudent();
+	}
 }
 
 
