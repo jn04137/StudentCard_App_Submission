@@ -333,6 +333,11 @@ class StudentController {
 
 		this.model.createStudent();
 		this.model.getStudentData();
+		const modal = document.querySelector('#createStudentModal');
+		$('#createStudentModal').modal('toggle');
+		document.getElementById('createStudentNameInput').value = "";
+		document.getElementById('createStudentClassInput').value = "";
+		document.getElementById('createStudentMajorInput').value = "";
 	}
 }
 
