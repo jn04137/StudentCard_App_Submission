@@ -62,6 +62,11 @@ class StudentModel {
 				this.students = JSON.parse(this.responseText);
 
 				const element = document.querySelector('#root');
+
+				// This will clear the current card deck for the 
+				// potential next card deck to be drawn
+				element.replaceChildren();
+
 				let event = new CustomEvent('GetStudentData', { detail: this.students });
 				element.dispatchEvent(event);
 
@@ -83,9 +88,7 @@ class StudentModel {
 				const element = document.querySelector('#root');
 				let event = new CustomEvent('StudentDeleted', { detail: 'success' });
 				element.dispatchEvent(event);
-				location.reload()
 			}
-
 		};
 
 		let url = `http://localhost:3050/api/student/${id}`;
@@ -146,7 +149,7 @@ class StudentView {
 
 	// This should be where we add the add student (+)
 	createView(studentData) {
-		//		consol.log(studentData);
+		console.log(studentData);
 		this.studentData = studentData;
 
 		this.app = viewHelper.getElement('#root');
@@ -304,6 +307,9 @@ class StudentController {
 	handleDeleteCard(id) {
 		console.log('modal ' + id + ' delete');
 		this.model.deleteStudent(id);
+
+		// This will get a new card deck / reset the root div
+		this.model.getStudentData();
 	}
 
 	handleStudentDeleted() {
@@ -325,7 +331,9 @@ class StudentController {
 		console.log(nameInput);
 		console.log(classInput);
 		console.log(majorInput);
+
 		this.model.createStudent();
+		this.model.getStudentData();
 	}
 }
 
